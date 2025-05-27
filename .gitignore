@@ -1,0 +1,51 @@
+# Jest
+coverage/
+jest.config.js
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Output directories
+dist/
+build/
+
+# TypeScript cache and compiled output
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# MongoDB dumps
+dump/
+backups/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Redis dump
+*.rdb
+*.aof
+
+# VSCode settings
+.vscode/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Misc
+*.tgz
+*.swp
+*.swo
+
+# Docker artifacts (if using Docker)
+docker-compose.override.yml
