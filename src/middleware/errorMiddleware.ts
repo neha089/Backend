@@ -1,5 +1,5 @@
 import { Request,Response,NextFunction } from "express";
-import { logger } from "../../utils/logger";
+import { logger } from "../config/utils/logger";
 
 export const errorMiddleware = (err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(`Error occurred: ${err.message}`, { stack: err.stack });
