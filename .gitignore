@@ -17,6 +17,9 @@ build/
 # Logs
 logs/
 *.log
+property-listing-system.postman_collection.json
+properties.csv
+.js
 
 # Environment variables
 .env

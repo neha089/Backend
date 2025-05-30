@@ -6,11 +6,12 @@ export interface AuthRequest extends Request {
   user?: { id: string };
 }
 
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) {
     logger.warn('No token provided');
-    return res.status(401).json({ error: 'Access denied. No token provided.' });
+    res.status(401).json({ error: 'Access denied. No token provided.' });
+    return;
   }
 
   try {
@@ -23,18 +24,20 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   }
 };
 
-export const restrictToOwner = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const restrictToOwner = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   const propertyId = req.params.id;
   const Property = require('../models/Property');
   try {
     const property = await Property.findById(propertyId);
     if (!property) {
       logger.warn(`Property not found: ${propertyId}`);
-      return res.status(404).json({ error: 'Property not found' });
+      res.status(404).json({ error: 'Property not found' });
+      return;
     }
     if (property.createdBy.toString() !== req.user!.id) {
       logger.warn(`Unauthorized access to property ${propertyId} by user ${req.user!.id}`);
-      return res.status(403).json({ error: 'Unauthorized' });
+      res.status(403).json({ error: 'Unauthorized' });
+      return;
     }
     next();
   } catch (error) {

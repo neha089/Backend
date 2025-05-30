@@ -1,36 +1,48 @@
-import { Request, Response } from 'express';
-import { validationResult } from 'express-validator';
-import { registerUser, loginUser } from '../services/authService';
+import { AuthRequest } from '../middleware/authMiddleware';
+import { Response } from 'express';
+import { createProperty, getProperties, updateProperty, deleteProperty } from '../services/propertyService';
 import { logger } from '../utils/logger';
 
-export const register = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    logger.warn('Validation error in register:', errors.array());
-    return res.status(400).json({ errors: errors.array() });
-  }
+export const createPropertyHandler = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { email, password, name } = req.body;
-    const user = await registerUser(email, password, name);
-    res.status(201).json({ message: 'User registered', user: { id: user._id, email: user.email, name: user.name } });
+    const property = await createProperty(req.body, req.user!.id);
+    res.status(201).json({ property });
   } catch (error) {
-    logger.error('Error in register:', error);
-    res.status(400).json({ error: error.message });
+    const err = error as Error;
+    logger.error('Create property error:', err);
+    res.status(400).json({ error: err.message });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    logger.warn('Validation error in login:', errors.array());
-    return res.status(400).json({ errors: errors.array() });
-  }
+export const getPropertiesHandler = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
-    const { token, user } = await loginUser(email, password);
-    res.json({ token, user });
+    const properties = await getProperties(req.query);
+    res.json({ properties });
   } catch (error) {
-    logger.error('Error in login:', error);
-    res.status(401).json({ error: error.message });
+    const err = error as Error;
+    logger.error('Get properties error:', err);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const updatePropertyHandler = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const property = await updateProperty(req.params.id, req.body, req.user!.id);
+    res.json({ property });
+  } catch (error) {
+    const err = error as Error;
+    logger.error('Update property error:', err);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const deletePropertyHandler = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const property = await deleteProperty(req.params.id, req.user!.id);
+    res.json({ message: 'Property deleted', property });
+  } catch (error) {
+    const err = error as Error;
+    logger.error('Delete property error:', err);
+    res.status(400).json({ error: err.message });
   }
 };

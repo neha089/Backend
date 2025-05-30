@@ -1,19 +1,19 @@
-import express from 'express';
-import { addFavorite, getFavorites, removeFavorite } from '../controllers/favoriteController';
+import { Router } from 'express';
+import { addFavoriteHandler, getFavoritesHandler, removeFavoriteHandler } from '../controllers/favoriteController';
 import { authMiddleware } from '../middleware/authMiddleware';
-import { body } from 'express-validator';
+import { check } from 'express-validator';
 
-const router = express.Router();
+const router = Router();
 
 router.post(
   '/',
   authMiddleware,
-  [body('propertyId').notEmpty().withMessage('Property ID is required')],
-  addFavorite
+  [check('propertyId').notEmpty().withMessage('Property ID is required')],
+  addFavoriteHandler
 );
 
-router.get('/', authMiddleware, getFavorites);
+router.get('/', authMiddleware, getFavoritesHandler);
 
-router.delete('/:propertyId', authMiddleware, removeFavorite);
+router.delete('/:propertyId', authMiddleware, removeFavoriteHandler);
 
 export default router;

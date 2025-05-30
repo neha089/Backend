@@ -1,5 +1,7 @@
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables from .env
 import express from 'express';
-import { connectDB } from './config/database';
+import connectDB from './config/database'; // Changed to default import
 import authRoutes from './routes/authRoutes';
 import propertyRoutes from './routes/propertyRoutes';
 import favoriteRoutes from './routes/favoriteRoutes';
@@ -31,4 +33,7 @@ connectDB().then(() => {
   app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
   });
+}).catch((err) => {
+  logger.error('Failed to start server:', err);
+  process.exit(1);
 });

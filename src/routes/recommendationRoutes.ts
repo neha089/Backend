@@ -1,22 +1,22 @@
-import express from 'express';
-import { recommendProperty, getRecommendations, searchUsers } from '../controllers/recommendationController';
+import { Router } from 'express';
+import { recommendPropertyHandler, getRecommendationsHandler, searchUsersHandler } from '../controllers/recommendationController';
 import { authMiddleware } from '../middleware/authMiddleware';
-import { body } from 'express-validator';
+import { check } from 'express-validator';
 
-const router = express.Router();
+const router = Router();
 
 router.post(
   '/',
   authMiddleware,
   [
-    body('recipientEmail').isEmail().withMessage('Invalid email'),
-    body('propertyId').notEmpty().withMessage('Property ID is required'),
+    check('recipientEmail').isEmail().withMessage('Valid recipient email is required'),
+    check('propertyId').notEmpty().withMessage('Property ID is required'),
   ],
-  recommendProperty
+  recommendPropertyHandler
 );
 
-router.get('/', authMiddleware, getRecommendations);
+router.get('/', authMiddleware, getRecommendationsHandler);
 
-router.get('/search', authMiddleware, searchUsers);
+router.get('/search', authMiddleware, searchUsersHandler);
 
 export default router;
