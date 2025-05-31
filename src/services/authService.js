@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllUsers = exports.changePassword = exports.deleteUser = exports.updateUser = exports.getUserById = exports.loginUser = exports.registerUser = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const User_1 = require("../../models/User");
-const logger_1 = require("../../utils/logger");
+const User_1 = require("../models/User");
+const logger_1 = require("../utils/logger");
 const registerUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const existingUser = yield User_1.User.findOne({ email: userData.email });
