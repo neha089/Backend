@@ -41,9 +41,7 @@ const swaggerOptions = {
   apis: ['./src/routes/*.ts'],
 };
 
-app.use('/', (req, res) => {
-  res.send('Welcome to the Property Listing System API.. refere readme of github repository for more details about the API');
-});
+
 
 app.use(express.json());
 app.use(
@@ -59,7 +57,9 @@ app.use('/favorites', authMiddleware, favoriteRoutes);
 app.use('/recommendations', authMiddleware, recommendationRoutes);
 
 app.use(errorMiddleware);
-
+app.use('/', (req, res) => {
+  res.send('Welcome to the Property Listing System API.. refere readme of github repository for more details about the API');
+});
 const PORT = process.env.PORT || 3000;
 connectDB()
   .then(() => {
