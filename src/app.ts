@@ -41,8 +41,9 @@ const swaggerOptions = {
   apis: ['./src/routes/*.ts'],
 };
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/', (req, res) => {
+  res.send('Welcome to the Property Listing System API.. refere readme of github repository for more details about the API');
+});
 
 app.use(express.json());
 app.use(
