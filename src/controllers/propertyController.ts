@@ -16,8 +16,8 @@ export const createPropertyHandler = async (req: AuthRequest, res: Response): Pr
 
 export const getPropertiesHandler = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const properties = await getProperties(req.query);
-    res.json({ properties });
+    const properties = await getProperties(req.query,req.user ? req.user.id : undefined);
+    res.status(200).json({ properties });
   } catch (error) {
     const err = error as Error;
     logger.error('Get properties error:', err);
