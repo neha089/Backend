@@ -46,7 +46,7 @@ export const getProperties = async (query: any, userId?: string) => {
 
 export const updateProperty = async (id: string, data: any, userId: string) => {
   const property = await Property.findOneAndUpdate(
-    { _id: id, createdBy: userId },
+    { id, createdBy: userId }, // Query by custom id field
     { $set: data },
     { new: true }
   );
@@ -63,7 +63,7 @@ export const updateProperty = async (id: string, data: any, userId: string) => {
 };
 
 export const deleteProperty = async (id: string, userId: string) => {
-  const property = await Property.findOneAndDelete({ _id: id, createdBy: userId });
+  const property = await Property.findOneAndDelete({ id, createdBy: userId }); // Query by custom id field
   if (!property) {
     throw new Error('Property not found or unauthorized');
   }
