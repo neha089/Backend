@@ -1,15 +1,21 @@
 import Redis from 'ioredis';
 import { logger } from './logger';
 
+logger.info(`REDIS_URL: ${process.env.REDIS_URL}`);
+
 export const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-  maxRetriesPerRequest: 10, // Increase to 10 retries
-  connectTimeout: 10000, // 10s timeout for initial connection
+  maxRetriesPerRequest: 10,
+  connectTimeout: 10000,
+  enableTLSForSentinelMode: false,
+  tls: process.env.REDIS_URL?.includes('upstash.io') ? {
+    rejectUnauthorized: false, // Upstash may not need strict certificate validation
+  } : undefined,
   retryStrategy(times) {
     if (times > 10) {
       logger.error('Redis max retry attempts reached, stopping retries');
-      return null; // Stop retrying after 10 attempts
+      return null;
     }
-    const delay = Math.min(times * 200, 5000); // Exponential backoff, max 5s
+    const delay = Math.min(times * 200, 5000);
     logger.warn(`Retrying Redis connection, attempt ${times}, delay ${delay}ms`);
     return delay;
   },
@@ -20,7 +26,8 @@ export const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost
 });
 
 redisClient.on('connect', () => {
-  logger.info('Redis connected successfully');
+  logger.info(`Redis connected successfully with `);
+  
 });
 
 redisClient.on('ready', () => {
@@ -31,7 +38,6 @@ redisClient.on('error', (err) => {
   logger.error('Redis connection error:', err);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
   redisClient.quit(() => {
     logger.info('Redis connection closed');
