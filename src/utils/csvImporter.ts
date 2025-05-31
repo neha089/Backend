@@ -113,7 +113,6 @@ async function importCSV(filePath: string, userId: string) {
 
 if (require.main === module) {
   if (process.argv.length !== 4) {
-    console.error('Usage: node dist/utils/csvImporter.js <csv_file_path> <user_id>');
     process.exit(1);
   }
 

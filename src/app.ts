@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-dotenv.config(); // Load environment variables from .env
+dotenv.config();
 import express from 'express';
-import connectDB from './config/database'; // Changed to default import
+import connectDB from './config/database';
 import authRoutes from './routes/authRoutes';
 import propertyRoutes from './routes/propertyRoutes';
 import favoriteRoutes from './routes/favoriteRoutes';
@@ -10,13 +10,44 @@ import { logger } from './utils/logger';
 import { authMiddleware } from './middleware/authMiddleware';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 const app = express();
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Property Listing System API',
+      version: '1.0.0',
+      description: 'API for managing properties, favorites, and recommendations',
+    },
+    servers: [
+      {
+        url: process.env.RENDER_URL || 'http://localhost:3000',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+  },
+  apis: ['./src/routes/*.ts'],
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json());
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 15 * 60 * 1000,
     max: 100,
   })
 );
@@ -29,11 +60,13 @@ app.use('/recommendations', authMiddleware, recommendationRoutes);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    logger.error('Failed to start server:', err);
+    process.exit(1);
   });
-}).catch((err) => {
-  logger.error('Failed to start server:', err);
-  process.exit(1);
-});
